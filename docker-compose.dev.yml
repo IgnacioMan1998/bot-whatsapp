@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  whatsapp-assistant:
+    build:
+      context: .
+      target: builder
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - DB_TYPE=sqlite
+      - DB_PATH=/app/data/whatsapp.db
+    volumes:
+      - ./src:/app/src:ro
+      - ./config:/app/config:ro
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./sessions:/app/sessions
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Debug port
+    depends_on: []  # Remove postgres dependency for dev
+
+  # Remove postgres service for development (using SQLite)
+  postgres:
+    profiles:
+      - production

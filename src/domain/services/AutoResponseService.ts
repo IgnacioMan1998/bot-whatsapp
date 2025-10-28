@@ -30,8 +30,10 @@ export class AutoResponseServiceImpl implements AutoResponseService {
       return false;
     }
 
-    // Don't respond to group messages
+    // Don't respond to group messages - CRITICAL SECURITY RULE
     if (message.isGroup) {
+      // Log this for security auditing
+      console.log(`[SECURITY] Auto-response blocked for group message from ${message.from.value}`);
       return false;
     }
 

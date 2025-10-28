@@ -5,15 +5,30 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "build:clean": "rm -rf dist && npm run build",
     "start": "node dist/index.js",
+    "start:prod": "NODE_ENV=production node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev:debug": "ts-node-dev --inspect --respawn --transpile-only src/index.ts",
     "cli": "ts-node src/cli.ts",
     "cli:build": "node dist/cli.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts"
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build",
+    "docker:build": "docker build -t whatsapp-assistant .",
+    "docker:run": "docker run -p 3000:3000 whatsapp-assistant",
+    "docker:compose": "docker-compose up -d",
+    "docker:compose:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop whatsapp-assistant",
+    "pm2:restart": "pm2 restart whatsapp-assistant",
+    "pm2:logs": "pm2 logs whatsapp-assistant"
   },
   "keywords": ["whatsapp", "assistant", "automation", "nodejs", "typescript"],
   "author": "WhatsApp Assistant",
@@ -31,7 +46,8 @@
     "uuid": "^9.0.1",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5"
+    "express-rate-limit": "^7.1.5",
+    "commander": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.8.10",
@@ -47,7 +63,8 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.53.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "pm2": "^5.3.0"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  whatsapp-assistant:
+    build: .
+    container_name: whatsapp-assistant
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=postgresql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=whatsapp_assistant
+      - DB_USER=assistant_user
+      - DB_PASSWORD=secure_password_here
+      - API_KEY=your_api_key_here
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./sessions:/app/sessions
+    depends_on:
+      - postgres
+    networks:
+      - whatsapp-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: whatsapp-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=whatsapp_assistant
+      - POSTGRES_USER=assistant_user
+      - POSTGRES_PASSWORD=secure_password_here
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - whatsapp-network
+
+  # Optional: Redis for caching (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: whatsapp-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - whatsapp-network
+
+volumes:
+  postgres_data:
+
+networks:
+  whatsapp-network:
+    driver: bridge

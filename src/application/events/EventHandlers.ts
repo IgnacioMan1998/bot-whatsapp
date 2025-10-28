@@ -31,8 +31,9 @@ export class MessageReceivedEventHandler implements EventHandler<MessageReceived
       from: event.data.from,
     });
 
-    // Skip group messages for auto-response
+    // Skip group messages for auto-response - CRITICAL SECURITY RULE
     if (event.data.isGroup) {
+      console.log(`[SECURITY] Auto-response timer blocked for group message from ${event.data.from}`);
       return;
     }
 

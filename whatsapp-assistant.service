@@ -1,0 +1,40 @@
+[Unit]
+Description=WhatsApp Personal Assistant
+Documentation=https://github.com/your-username/whatsapp-personal-assistant
+After=network.target
+
+[Service]
+Type=simple
+User=whatsapp
+WorkingDirectory=/opt/whatsapp-assistant
+ExecStart=/usr/bin/node dist/index.js
+Restart=on-failure
+RestartSec=10
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutStopSec=5
+SyslogIdentifier=whatsapp-assistant
+
+# Environment
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=DB_TYPE=postgresql
+Environment=DB_HOST=localhost
+Environment=DB_PORT=5432
+Environment=DB_NAME=whatsapp_assistant
+Environment=DB_USER=assistant_user
+EnvironmentFile=-/opt/whatsapp-assistant/.env
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/whatsapp-assistant/data /opt/whatsapp-assistant/logs /opt/whatsapp-assistant/sessions
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
