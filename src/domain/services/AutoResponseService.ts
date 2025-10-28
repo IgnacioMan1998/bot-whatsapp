@@ -10,7 +10,6 @@ export interface AutoResponseService {
 
 @injectable()
 export class AutoResponseServiceImpl implements AutoResponseService {
-  
   /**
    * Determines if an automatic response should be sent
    */
@@ -44,6 +43,12 @@ export class AutoResponseServiceImpl implements AutoResponseService {
    * Generates an appropriate response message
    */
   generateResponse(contact: Contact, message: Message): string {
+    // Check if it's a media message that requires special handling
+    const mediaResponse = this.getMediaSpecificResponse(message);
+    if (mediaResponse) {
+      return this.personalizeMessage(mediaResponse, contact, message);
+    }
+
     // Use predefined message if available
     const predefinedMessage = contact.getPredefinedMessage();
     if (predefinedMessage) {
@@ -52,6 +57,47 @@ export class AutoResponseServiceImpl implements AutoResponseService {
 
     // Use default message
     return this.personalizeMessage(DEFAULT_CONFIG.AUTO_MESSAGE, contact, message);
+  }
+
+  /**
+   * Gets specific response for media messages
+   */
+  private getMediaSpecificResponse(message: Message): string | null {
+    // Check if message has media information
+    const messageContent = message.content.value;
+
+    // Check for media types that need special responses
+    if (messageContent.includes('[Audio]')) {
+      return process.env.AUDIO_RESPONSE_MESSAGE || 'Recibí tu audio. En unos minutos te respondo.';
+    }
+
+    if (messageContent.includes('[Video]')) {
+      return process.env.VIDEO_RESPONSE_MESSAGE || 'Recibí tu video. En unos minutos te respondo.';
+    }
+
+    if (messageContent.includes('[Documento]')) {
+      return (
+        process.env.DOCUMENT_RESPONSE_MESSAGE || 'Recibí tu documento. En unos minutos te respondo.'
+      );
+    }
+
+    if (messageContent.includes('[Imagen]')) {
+      return process.env.IMAGE_RESPONSE_MESSAGE || 'Vi tu imagen. Te respondo en un momento.';
+    }
+
+    if (messageContent.includes('[Sticker]')) {
+      return process.env.STICKER_RESPONSE_MESSAGE || 'Gracias por el sticker! Te respondo pronto.';
+    }
+
+    if (messageContent.includes('[Ubicación]')) {
+      return process.env.LOCATION_RESPONSE_MESSAGE || 'Recibí tu ubicación. Te contacto pronto.';
+    }
+
+    if (messageContent.includes('[Contacto]')) {
+      return 'Gracias por compartir el contacto. Te respondo en breve.';
+    }
+
+    return null;
   }
 
   /**
@@ -70,7 +116,7 @@ export class AutoResponseServiceImpl implements AutoResponseService {
     // Replace placeholders with actual values
     personalizedMessage = personalizedMessage.replace('{name}', contact.name.value);
     personalizedMessage = personalizedMessage.replace('{contact_name}', contact.name.value);
-    
+
     // Add timestamp information
     const now = new Date();
     personalizedMessage = personalizedMessage.replace('{time}', now.toLocaleTimeString());
@@ -80,7 +126,28 @@ export class AutoResponseServiceImpl implements AutoResponseService {
     const delayMinutes = Math.ceil(contact.getResponseDelay() / 60);
     personalizedMessage = personalizedMessage.replace('{delay}', delayMinutes.toString());
 
+    // Replace media type placeholder
+    const mediaType = this.getMediaTypeFromMessage(message);
+    personalizedMessage = personalizedMessage.replace('{media_type}', mediaType);
+
     return personalizedMessage;
+  }
+
+  /**
+   * Extracts media type from message content for personalization
+   */
+  private getMediaTypeFromMessage(message: Message): string {
+    const content = message.content.value;
+
+    if (content.includes('[Audio]')) return 'audio';
+    if (content.includes('[Video]')) return 'video';
+    if (content.includes('[Documento]')) return 'documento';
+    if (content.includes('[Imagen]')) return 'imagen';
+    if (content.includes('[Sticker]')) return 'sticker';
+    if (content.includes('[Ubicación]')) return 'ubicación';
+    if (content.includes('[Contacto]')) return 'contacto';
+
+    return 'mensaje';
   }
 
   /**
@@ -120,8 +187,8 @@ export class AutoResponseServiceImpl implements AutoResponseService {
     // Respond immediately to certain keywords
     const immediateKeywords = ['ahora', 'now', 'inmediato', 'immediate'];
     const content = message.content.value.toLowerCase();
-    
-    return immediateKeywords.some(keyword => content.includes(keyword));
+
+    return immediateKeywords.some((keyword) => content.includes(keyword));
   }
 
   /**

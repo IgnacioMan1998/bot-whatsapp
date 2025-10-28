@@ -5,7 +5,8 @@ import { Logger } from '@shared/utils/logger';
 import { 
   WhatsAppPort, 
   RawMessage, 
-  WhatsAppConnectionStatus 
+  WhatsAppConnectionStatus,
+  MessageMediaType 
 } from '@application/ports/WhatsAppPort';
 import { InfrastructureError } from '@shared/types';
 
@@ -251,16 +252,76 @@ export class WhatsAppWebAdapter implements WhatsAppPort {
   }
 
   private convertToRawMessage(message: Message): RawMessage {
+    const messageType = this.getMessageType(message);
+    const hasMedia = message.hasMedia;
+    
     return {
       id: message.id._serialized,
       from: this.formatPhoneNumber(message.from),
       to: this.formatPhoneNumber(message.to),
-      body: message.body,
+      body: message.body || this.getMediaDescription(messageType),
       timestamp: message.timestamp * 1000, // Convert to milliseconds
       fromMe: message.fromMe,
       isGroup: message.from.includes('@g.us'),
       author: message.author ? this.formatPhoneNumber(message.author) : undefined,
+      type: messageType,
+      hasMedia: hasMedia,
+      mediaData: hasMedia ? {
+        mimetype: (message as any).mimetype,
+        filename: (message as any).filename,
+        size: (message as any).filesize,
+      } : undefined,
     };
+  }
+
+  private getMessageType(message: Message): MessageMediaType {
+    if (!message.hasMedia && message.body) {
+      return 'text';
+    }
+    
+    // Check message type from whatsapp-web.js
+    const msgType = (message as any).type;
+    
+    switch (msgType) {
+      case 'image':
+        return 'image';
+      case 'video':
+        return 'video';
+      case 'audio':
+      case 'ptt': // Push to talk (voice message)
+        return 'audio';
+      case 'document':
+        return 'document';
+      case 'sticker':
+        return 'sticker';
+      case 'location':
+        return 'location';
+      case 'vcard':
+        return 'contact';
+      default:
+        return message.hasMedia ? 'unknown' : 'text';
+    }
+  }
+
+  private getMediaDescription(type: MessageMediaType): string {
+    switch (type) {
+      case 'image':
+        return '[Imagen]';
+      case 'video':
+        return '[Video]';
+      case 'audio':
+        return '[Audio]';
+      case 'document':
+        return '[Documento]';
+      case 'sticker':
+        return '[Sticker]';
+      case 'location':
+        return '[Ubicación]';
+      case 'contact':
+        return '[Contacto]';
+      default:
+        return '[Archivo multimedia]';
+    }
   }
 
   private formatPhoneNumber(whatsappId: string): string {

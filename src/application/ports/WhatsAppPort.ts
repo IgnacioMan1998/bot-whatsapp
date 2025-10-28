@@ -7,7 +7,25 @@ export interface RawMessage {
   fromMe: boolean;
   isGroup: boolean;
   author?: string;
+  type: MessageMediaType;
+  hasMedia: boolean;
+  mediaData?: {
+    mimetype?: string;
+    filename?: string;
+    size?: number;
+  };
 }
+
+export type MessageMediaType = 
+  | 'text' 
+  | 'image' 
+  | 'video' 
+  | 'audio' 
+  | 'document' 
+  | 'sticker' 
+  | 'location' 
+  | 'contact' 
+  | 'unknown';
 
 export interface WhatsAppConnectionStatus {
   isConnected: boolean;

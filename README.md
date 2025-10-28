@@ -6,7 +6,9 @@ Un asistente personal para WhatsApp que responde mensajes automáticamente con c
 
 - **Respuestas automáticas personalizadas** por contacto
 - **Sistema de temporizadores** configurable para cada contacto
+- **Manejo inteligente de medios** (audios, videos, imágenes, stickers, documentos)
 - **Detección de mensajes urgentes** con notificaciones especiales
+- **Protección contra grupos** - NUNCA responde en grupos automáticamente
 - **API REST completa** para gestión remota
 - **Arquitectura limpia** con separación de responsabilidades
 - **Soporte multi-base de datos** (SQLite para desarrollo, PostgreSQL para producción)
@@ -141,6 +143,28 @@ curl -X POST http://localhost:3000/api/contacts \
     "autoResponseDelay": 300,
     "autoResponseMessage": "Hola! Te responderé pronto."
   }'
+```
+
+### Manejo Inteligente de Medios
+
+El sistema responde de manera diferente según el tipo de contenido recibido:
+
+| Tipo de Medio | Respuesta Automática |
+|---------------|---------------------|
+| **Audios/Videos/Documentos** | "Recibí tu [tipo]. En unos minutos te respondo." |
+| **Imágenes** | "Vi tu imagen. Te respondo en un momento." |
+| **Stickers** | "Gracias por el sticker! Te respondo pronto." |
+| **Ubicación** | "Recibí tu ubicación. Te contacto pronto." |
+| **Contactos** | "Gracias por compartir el contacto. Te respondo en breve." |
+| **Texto** | Mensaje personalizado configurado |
+
+**Configuración de respuestas por tipo:**
+```env
+AUDIO_RESPONSE_MESSAGE=Recibí tu audio. En unos minutos te respondo.
+VIDEO_RESPONSE_MESSAGE=Recibí tu video. En unos minutos te respondo.
+DOCUMENT_RESPONSE_MESSAGE=Recibí tu documento. En unos minutos te respondo.
+IMAGE_RESPONSE_MESSAGE=Vi tu imagen. Te respondo en un momento.
+STICKER_RESPONSE_MESSAGE=Gracias por el sticker! Te respondo pronto.
 ```
 
 ## 📚 Documentación

@@ -115,9 +115,26 @@ Common causes:
 - Close other WhatsApp Web sessions
 - Check WhatsApp account status
 
-### Can I send media files (images, documents)?
+### How does the system handle media files (images, videos, audios, documents, stickers)?
 
-Currently, the system supports text messages only. Media support may be added in future versions.
+The system **receives and processes** all types of media but responds differently based on the media type:
+
+**Audio, Video, Documents**: 
+- Response: "Recibí tu [tipo]. En unos minutos te respondo."
+- These require more attention, so the response indicates a longer delay
+
+**Images**: 
+- Response: "Vi tu imagen. Te respondo en un momento."
+- Quick acknowledgment for visual content
+
+**Stickers**: 
+- Response: "Gracias por el sticker! Te respondo pronto."
+- Friendly acknowledgment for casual content
+
+**Location/Contact**: 
+- Specific responses for each type
+
+**Sending media**: Currently, the system only sends text responses. Media sending may be added in future versions.
 
 ### How do I handle group messages?
 
