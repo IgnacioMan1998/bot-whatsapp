@@ -1,0 +1,35 @@
+{
+  "whatsapp": {
+    "sessionPath": "./sessions",
+    "puppeteerOptions": {
+      "headless": true,
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    }
+  },
+  "database": {
+    "type": "sqlite",
+    "sqlite": {
+      "path": "./data/assistant.db",
+      "enableWAL": true,
+      "busyTimeout": 30000
+    },
+    "postgresql": {
+      "host": "localhost",
+      "port": 5432,
+      "database": "whatsapp_assistant",
+      "username": "assistant_user",
+      "password": "${DB_PASSWORD}",
+      "ssl": false,
+      "poolSize": 10,
+      "connectionTimeout": 30000
+    }
+  },
+  "server": {
+    "port": 3000,
+    "host": "localhost"
+  },
+  "defaults": {
+    "responseDelay": 60,
+    "autoMessage": "Hola! Este es un mensaje automático. Te responderé pronto."
+  }
+}

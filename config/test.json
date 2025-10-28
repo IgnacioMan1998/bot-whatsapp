@@ -1,0 +1,14 @@
+{
+  "database": {
+    "type": "sqlite",
+    "sqlite": {
+      "path": ":memory:",
+      "enableWAL": false,
+      "busyTimeout": 5000
+    }
+  },
+  "server": {
+    "port": 0,
+    "host": "localhost"
+  }
+}

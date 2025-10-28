@@ -1,0 +1,1 @@
+export { WhatsAppWebAdapter, WhatsAppWebConfig } from './WhatsAppWebAdapter';

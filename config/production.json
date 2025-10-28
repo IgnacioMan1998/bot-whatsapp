@@ -1,0 +1,19 @@
+{
+  "database": {
+    "type": "postgresql",
+    "postgresql": {
+      "host": "${DB_HOST}",
+      "port": "${DB_PORT}",
+      "database": "${DB_NAME}",
+      "username": "${DB_USER}",
+      "password": "${DB_PASSWORD}",
+      "ssl": true,
+      "poolSize": 20,
+      "connectionTimeout": 30000
+    }
+  },
+  "server": {
+    "port": "${PORT}",
+    "host": "0.0.0.0"
+  }
+}
